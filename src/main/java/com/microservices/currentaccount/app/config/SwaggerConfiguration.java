@@ -15,7 +15,7 @@ public class SwaggerConfiguration {
 	public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
 				.select().apis(RequestHandlerSelectors
-						.basePackage("com.microservice.counth.CountH.controller"))
+						.basePackage("com.microservices.currentaccount.app.controller"))
 				.paths(PathSelectors.any())
 				.build();
 		}
