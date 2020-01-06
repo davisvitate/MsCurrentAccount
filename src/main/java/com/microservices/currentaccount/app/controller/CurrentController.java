@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.microservices.currentaccount.app.model.ClientPerson;
+import com.microservices.currentaccount.app.model.ClientPersonInfo;
 import com.microservices.currentaccount.app.model.CurrentAccount;
 import com.microservices.currentaccount.app.services.CurrentServiceImp;
 import com.microservices.currentaccount.app.services.CurrentServices;
 
 import java.net.URI;
-
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-
-
-
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -67,12 +65,37 @@ public class CurrentController {
 //									
 //	}
 	// creation of a savings account
+//	@PostMapping
+//	public Mono<CurrentAccount> create(@RequestBody CurrentAccount monoCurrentAccount) {
+//		ClientPerson client = new ClientPerson();
+//		client = monoCurrentAccount.getClientperson();
+//		client.setType("personal client");
+//		
+//		monoCurrentAccount.getNum();
+//		serviceclient.saveMSClient(client).subscribe();
+//
+//		service.saveClientPerson(client).subscribe();
+//		return service.save(monoCurrentAccount);
+//
+//	}
+	
+	
+	
 	@PostMapping
 	public Mono<CurrentAccount> create(@RequestBody CurrentAccount monoCurrentAccount) {
 		ClientPerson client = new ClientPerson();
 		client = monoCurrentAccount.getClientperson();
 		client.setType("personal client");
-		serviceclient.saveMSClient(client).subscribe();
+		ClientPersonInfo clientinfo= new ClientPersonInfo();
+		clientinfo.setName(monoCurrentAccount.getClientperson().getName());
+		clientinfo.setLastname(monoCurrentAccount.getClientperson().getLastname());
+		clientinfo.setNum_current(monoCurrentAccount.getNum());
+		clientinfo.setDni(monoCurrentAccount.getClientperson().getDni());
+		clientinfo.setType("personal client");
+		
+		
+		serviceclient.saveMSClient(clientinfo).subscribe();
+
 		service.saveClientPerson(client).subscribe();
 		return service.save(monoCurrentAccount);
 
@@ -111,7 +134,8 @@ public class CurrentController {
 
 	// edit the savings account
 	@PutMapping("/{id}")
-	public Mono<ResponseEntity<CurrentAccount>> upadate(@RequestBody CurrentAccount CurrentAccount, @PathVariable String id) {
+	public Mono<ResponseEntity<CurrentAccount>> upadate(@RequestBody CurrentAccount CurrentAccount,
+			@PathVariable String id) {
 		return service.findById(id).flatMap(c -> {
 			c.setNum(CurrentAccount.getNum());
 			c.setMonto(CurrentAccount.getMonto());
@@ -129,5 +153,18 @@ public class CurrentController {
 			return service.delete(p).then(Mono.just(new ResponseEntity<Void>(HttpStatus.NO_CONTENT)));
 		}).defaultIfEmpty(new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
 	}
+	
+	@GetMapping("/dni/{dni}")
+	public Flux<CurrentAccount> getClientDni(@PathVariable String dni) {
+		
+		return service.findByDniClient(dni);
+
+	}
+	
+	@GetMapping("/getmoney/{dni}")
+	public Mono<Map<String, Object>>  getMoney(@PathVariable String dni) {
+		return service.getMoney(dni);
+	}
+	
 
 }

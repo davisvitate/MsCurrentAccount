@@ -2,12 +2,16 @@ package com.microservices.currentaccount.app.services;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import com.microservices.currentaccount.app.model.ClientPerson;
+import com.microservices.currentaccount.app.model.ClientPersonInfo;
 import com.microservices.currentaccount.app.model.CurrentAccount;
 import com.microservices.currentaccount.app.model.Firmante;
 import com.microservices.currentaccount.app.model.Movement;
@@ -31,6 +35,8 @@ public class CurrentServiceImp implements CurrentServices {
 	@Autowired
 	@Qualifier("Client")
 	WebClient client1;
+	
+	
 	
 	@Autowired
 	private CurrentRepository currentrepositry;
@@ -209,20 +215,50 @@ public class CurrentServiceImp implements CurrentServices {
 				.bodyToMono(Movement.class);
 	}
 	
+//	@SuppressWarnings("deprecation")
+//	public Mono<ClientPerson> saveMSClient(ClientPerson client) {
+//		return client1.post()
+//				.accept(APPLICATION_JSON_UTF8)
+//				.contentType(APPLICATION_JSON_UTF8)
+//				//.body(fromObject(producto))
+//				.syncBody(client)
+//				.retrieve()
+//				.bodyToMono(ClientPerson.class);
+//	}
+	
 	@SuppressWarnings("deprecation")
-	public Mono<ClientPerson> saveMSClient(ClientPerson client) {
+	public Mono<ClientPersonInfo> saveMSClient(ClientPersonInfo client) {
 		return client1.post()
 				.accept(APPLICATION_JSON_UTF8)
 				.contentType(APPLICATION_JSON_UTF8)
 				//.body(fromObject(producto))
 				.syncBody(client)
 				.retrieve()
-				.bodyToMono(ClientPerson.class);
+				.bodyToMono(ClientPersonInfo.class);
 	}
+	
+	@Override
+	public Flux<CurrentAccount> findByDniClient(String dni) {
+		// TODO Auto-generated method stub
+		return currentrepositry.findByDniClient(dni);
+	}
+	
+	
+	public Mono<Map<String, Object>> getMoney(String dni) {
+		// TODO Auto-generated method stub
+		Map<String, Object> respuesta = new HashMap<String, Object>();
 
+		return currentrepositry.findByDniMono(dni).map(c -> {
+			respuesta.put("money", c.getMonto());
+			respuesta.put("name", c.getClientperson().getName());
+			return respuesta;
+		});
+		// return null;
+	}
 	
 	
 
+	
 	
 
 }

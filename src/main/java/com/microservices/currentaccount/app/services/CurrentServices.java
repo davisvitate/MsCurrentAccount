@@ -3,6 +3,9 @@ package com.microservices.currentaccount.app.services;
 
 
 
+import java.util.Map;
+
+
 import com.microservices.currentaccount.app.model.ClientPerson;
 import com.microservices.currentaccount.app.model.CurrentAccount;
 import com.microservices.currentaccount.app.model.Firmante;
@@ -23,6 +26,10 @@ public interface CurrentServices {
 	public Mono<CurrentAccount> save(CurrentAccount CurrentAccount);
 	
 	public Mono<Void> delete(CurrentAccount CurrentAccount);
+	
+	public Flux<CurrentAccount> findByDniClient(String dni);
+	
+	public Mono<Map<String, Object>> getMoney(String dni);
 	
 	
 	public Flux<ClientPerson> findAllClientPerson();

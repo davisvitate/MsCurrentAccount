@@ -76,7 +76,7 @@ public class MovementController {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 	
-	@PutMapping("/retire/dni/{id}")
+	@PutMapping("/retire/dni/{dni}")
 	public Mono<ResponseEntity<CurrentAccount>> updateretiredni(@RequestBody CurrentAccount CurrentAccount, @PathVariable String dni) {
 
 		Movement mov = new Movement();
@@ -139,7 +139,7 @@ public class MovementController {
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
 	
-	@PutMapping("/deposite/dni/{id}")
+	@PutMapping("/deposite/dni/{dni}")
 	public Mono<ResponseEntity<CurrentAccount>> updepositdni(@RequestBody CurrentAccount CurrentAccount, @PathVariable String dni) {
 		Movement mov = new Movement();
 		return service.findByDniMono(dni).flatMap(c -> {
