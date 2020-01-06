@@ -16,7 +16,9 @@ public interface CurrentServices {
 
 	public Flux<CurrentAccount> findAll(); 
 	
-	public Mono<CurrentAccount> findById(String id);
+	public Mono<CurrentAccount> findById(String id); 
+	
+	public Mono<CurrentAccount> findByDniMono(String dni);
 	
 	public Mono<CurrentAccount> save(CurrentAccount CurrentAccount);
 	

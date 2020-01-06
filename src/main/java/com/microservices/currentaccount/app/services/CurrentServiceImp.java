@@ -33,7 +33,7 @@ public class CurrentServiceImp implements CurrentServices {
 	WebClient client1;
 	
 	@Autowired
-	private CurrentRepository countrepositry;
+	private CurrentRepository currentrepositry;
 	
 	@Autowired
 	private ClientPersonRepository clientrerepository;
@@ -51,25 +51,31 @@ public class CurrentServiceImp implements CurrentServices {
 	@Override
 	public Flux<CurrentAccount> findAll() {
 		
-		return countrepositry.findAll();
+		return currentrepositry.findAll();
 	}
 
 	@Override
 	public Mono<CurrentAccount> findById(String id) {
 		
-		return countrepositry.findById(id);
+		return currentrepositry.findById(id);
+	}
+	
+	@Override
+	public Mono<CurrentAccount> findByDniMono(String dni) {
+		// TODO Auto-generated method stub
+		return currentrepositry.findByDniMono(dni);
 	}
 
 	@Override
 	public Mono<CurrentAccount> save(CurrentAccount CurrentAccount) {
 		
-		return countrepositry.save(CurrentAccount);
+		return currentrepositry.save(CurrentAccount);
 	}
 
 	@Override
 	public Mono<Void> delete(CurrentAccount CurrentAccount) {
 		
-		return countrepositry.delete(CurrentAccount);
+		return currentrepositry.delete(CurrentAccount);
 	}
 
 
@@ -213,6 +219,8 @@ public class CurrentServiceImp implements CurrentServices {
 				.retrieve()
 				.bodyToMono(ClientPerson.class);
 	}
+
+	
 	
 
 	

@@ -75,6 +75,39 @@ public class MovementController {
 				.contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
+	
+	@PutMapping("/retire/dni/{id}")
+	public Mono<ResponseEntity<CurrentAccount>> updateretiredni(@RequestBody CurrentAccount CurrentAccount, @PathVariable String dni) {
+
+		Movement mov = new Movement();
+
+		return service.findByDniMono(dni).flatMap(c -> {
+			double montoantes = c.getMonto();
+			int num_mov_inicial = c.getNum_mov();
+			if (montoantes >= CurrentAccount.getMonto()) {
+				c.setMonto(montoantes - CurrentAccount.getMonto());
+				c.setNum_mov(num_mov_inicial + 1);
+				mov.setNum_count(CurrentAccount.getNum());
+				mov.setDescription("Retire");
+				mov.setSaldo(CurrentAccount.getMonto());
+				mov.setDate(new Date());
+				mov.setClient(CurrentAccount.getClientperson());
+				mov.setType_account("current account");
+				mov.setNum_mov(c.getNum_mov());
+				if (c.getNum_mov() >= 4) {
+					double comisionantes = c.getCommission();
+					c.setCommission(comisionantes + 2);
+					c.setMonto(c.getMonto() - 2);
+				}
+				service.saveMove(mov).subscribe();// registre of the movement
+
+				serviceclient.saveMSMovement(mov).subscribe();// registre of the movement on the microservice
+			}
+			return service.save(c);
+		}).map(c -> ResponseEntity.created(URI.create("/CurrentAccount/retire/dni/".concat(c.getId())))
+				.contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+				.defaultIfEmpty(ResponseEntity.notFound().build());
+	}
 
 	// deposit is made
 	@PutMapping("/deposite/{id}")
@@ -91,7 +124,7 @@ public class MovementController {
 			mov.setSaldo(CurrentAccount.getMonto());
 			mov.setDate(new Date());
 			mov.setClient(CurrentAccount.getClientperson());
-			mov.setType_account("savings account");
+			mov.setType_account("current account");
 			mov.setNum_mov(c.getNum_mov());
 			if (c.getNum_mov() >= 4) {
 				double comisionantes = c.getCommission();
@@ -102,6 +135,35 @@ public class MovementController {
 			serviceclient.saveMSMovement(mov).subscribe();
 			return service.save(c);
 		}).map(c -> ResponseEntity.created(URI.create("/CurrentAccount/deposite/".concat(c.getId())))
+				.contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
+				.defaultIfEmpty(ResponseEntity.notFound().build());
+	}
+	
+	@PutMapping("/deposite/dni/{id}")
+	public Mono<ResponseEntity<CurrentAccount>> updepositdni(@RequestBody CurrentAccount CurrentAccount, @PathVariable String dni) {
+		Movement mov = new Movement();
+		return service.findByDniMono(dni).flatMap(c -> {
+			double montoantes = c.getMonto();
+			int num_mov_inicial = c.getNum_mov();
+			c.setMonto(montoantes + CurrentAccount.getMonto());
+			c.setNum_mov(num_mov_inicial + 1);
+			// c.setClientperson(CurrentAccount.getClientperson());
+			mov.setNum_count(CurrentAccount.getNum());
+			mov.setDescription("Deposite");
+			mov.setSaldo(CurrentAccount.getMonto());
+			mov.setDate(new Date());
+			mov.setClient(CurrentAccount.getClientperson());
+			mov.setType_account("current account");
+			mov.setNum_mov(c.getNum_mov());
+			if (c.getNum_mov() >= 4) {
+				double comisionantes = c.getCommission();
+				c.setCommission(comisionantes + 2);
+				c.setMonto(c.getMonto() - 2);
+			}
+			service.saveMove(mov).subscribe();// deposite of the mevement
+			serviceclient.saveMSMovement(mov).subscribe();
+			return service.save(c);
+		}).map(c -> ResponseEntity.created(URI.create("/CurrentAccount/deposite/dni/".concat(c.getId())))
 				.contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}

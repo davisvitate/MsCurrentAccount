@@ -33,7 +33,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
-@RequestMapping("/CurrentAccount")
+@RequestMapping("/current")
 public class CurrentController {
 	private static Logger log = LoggerFactory.getLogger(CurrentController.class);
 
@@ -117,7 +117,7 @@ public class CurrentController {
 			c.setMonto(CurrentAccount.getMonto());
 			c.setClientperson(CurrentAccount.getClientperson());
 			return service.save(c);
-		}).map(c -> ResponseEntity.created(URI.create("/CurrentAccount/".concat(c.getId())))
+		}).map(c -> ResponseEntity.created(URI.create("/current/".concat(c.getId())))
 				.contentType(MediaType.APPLICATION_JSON_UTF8).body(c))
 				.defaultIfEmpty(ResponseEntity.notFound().build());
 	}
